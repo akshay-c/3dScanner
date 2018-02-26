@@ -14,13 +14,14 @@ Building 3dScanner
 Prerequisites:
 
 Ubuntu (Tested on Ubuntu 14.04)
-pkgconfig
-gtk 2.0
-libserial
-epoxy
-gtkgl
-opengl
-cmake
+
+* pkgconfig
+* gtk 2.0
+* libserial
+* epoxy
+* gtkgl
+* opengl
+* cmake
 
 Create a folder eg 'build' in the project directory. Now open 'Terminal' and browse to the newly created folder.
 Enter the command 'cmake ../'. This will check if all the prerequisites are properly installed and download needed
