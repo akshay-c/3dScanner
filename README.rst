@@ -38,7 +38,7 @@ Arduino along with firmware which will rotate the turn-table in a specific angle
 
 License
 ======
-GNU Affero General Public License(AGPL).
+GNU GENERAL PUBLIC LICENSE Version 3.
 
 Links
 ======
