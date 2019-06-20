@@ -65,8 +65,7 @@ list(REMOVE_DUPLICATES Scanner_INCLUDE_DIRS)
 include_directories(${Scanner_INCLUDE_DIRS})
 add_executable (Scanner ${Scanner_SOURCES})
 set(OPENCV_LIBS opencv_core opencv_imgproc opencv_calib3d opencv_video
-opencv_features2d opencv_ml opencv_highgui opencv_objdetect 
-opencv_contrib opencv_legacy opencv_gpu)
+opencv_features2d opencv_ml opencv_highgui opencv_objdetect )
 #set(OPENCV_LIBS opencv_highgui)
 
 target_link_libraries (Scanner ${OPENCV_LIBS} ${OPENGL_LIBRARIES}

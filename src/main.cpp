@@ -4,6 +4,7 @@
 #include <gtk/gtk.h>
 #include <gtkgl/gtkglarea.h>
 #include <GL/gl.h>
+#include <opencv2/core/types_c.h>
 #include <math.h>
 
 #include "main.hpp"
@@ -328,7 +329,8 @@ void TakeSample()
     {
         cap.open(SelectedCam);
     }
-    cap >> frame;
+    while(!cap.grab());
+            cap.retrieve(frame, 0);
     cv::flip(frame, SampleImage, 0);
 }
 

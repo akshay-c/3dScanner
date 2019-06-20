@@ -10,7 +10,9 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <opencv2/opencv.hpp>
+#include <opencv2/core/types_c.h>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/operations.hpp>
 #include <time.h>
 #include <X11/Xlib.h>
 
@@ -21,6 +23,11 @@
 #include "idle.hpp"
 
 //Function Declarations
+namespace cv
+{
+    using std::vector;
+    using std::string;
+}
 
 void StartCapture(int);
 
@@ -266,7 +273,7 @@ int RetrieveCamInfo(char* Name)
 
 int StartCalibration()
 {
-    IplImage img;
+    /*IplImage img;
     if(ValidateForm()>0)
     {
         cv::Mat CameraMatrix, DistCoeffs;
@@ -350,14 +357,14 @@ int StartCalibration()
             }
         }
     }   
-
+*/
 }
 
 void RunCalibrationAndSave(cv::vector<cv::vector<cv::Point2f> > ImagePoints,
     cv::Size ImageSize, cv::Size BoardSize, cv::Mat& CameraMatrix,
     cv::Mat& DistCoeffs)
 {
-    CalibrationFlags = 0;
+    /*CalibrationFlags = 0;
     cv::vector<cv::Mat> rvecs, tvecs;
     cv::vector<float> ReProjErrs;
     double TotalAvgErr = 0;
@@ -481,13 +488,13 @@ void RunCalibrationAndSave(cv::vector<cv::vector<cv::Point2f> > ImagePoints,
             }
             fs << "ImagePoints" << imagePtMat;
         }
-    }
+    }*/
 }
 
 void CalculateChessboardCorners(cv::Size BoardSize,
     cv::vector<cv::Point3f>& Corners)
 {
-    Corners.resize(0);
+    /*Corners.resize(0);
 
     switch(SelectedPattern)
     {
@@ -509,5 +516,5 @@ void CalculateChessboardCorners(cv::Size BoardSize,
       default:
         // CV_Error(CV_StsBadArg, "Unknown pattern type\n");
         break;
-    }
+    }*/
 }

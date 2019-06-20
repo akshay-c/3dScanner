@@ -1,4 +1,5 @@
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/types_c.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <gtk/gtk.h>
