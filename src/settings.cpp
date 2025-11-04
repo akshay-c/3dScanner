@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <sstream>
 #include <gtk/gtk.h>
-#include <gtkgl/gtkglarea.h>
+#include <gtk/gtkglarea.h>
 #include <epoxy/gl.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -64,7 +64,7 @@ void ShowSettingsWindow()
     SettingsContainerControls = gtk_layout_new(NULL, NULL);
     SettingsContainerCam = gtk_vbox_new(FALSE, 0);
 
-    CamArea = gtk_gl_area_new (AttrList);
+    CamArea = gtk_gl_area_new ();
     gtk_widget_set_events(GTK_WIDGET(CamArea), GDK_EXPOSURE_MASK);
 
     gtk_window_set_transient_for(GTK_WINDOW(SettingsWindow),
@@ -77,7 +77,7 @@ void ShowSettingsWindow()
     /*gtk_window_set_default_size (GTK_WINDOW(SettingsWindow),
 		SW_WIDTH , SW_HEIGHT);*/
     gtk_widget_set_size_request(SettingsWindow, SW_WIDTH, SW_HEIGHT);
-    gtk_quit_add_destroy(1, GTK_OBJECT(CamArea));
+    //gtk_quit_add_destroy(1, GTK_OBJECT(CamArea));
 
     gtk_container_add(GTK_CONTAINER(SettingsWindow), SettingsContainerMain);
     gtk_box_pack_start(GTK_BOX(SettingsContainerMain),
@@ -102,7 +102,7 @@ void ShowSettingsWindow()
 
     //gtk_signal_connect (GTK_OBJECT(CamArea), "expose-event",
     //	GTK_SIGNAL_FUNC(render), NULL);
-    gtk_widget_set_usize(CamArea, CA_WIDTH, CA_HEIGHT);
+    gtk_widget_set_size_request(CamArea, CA_WIDTH, CA_HEIGHT);
     //gtk_widget_set_size_request(CamArea, CA_WIDTH, CA_HEIGHT);
     //GTK_WIDGET_SET_FLAGS(CamArea,GTK_CAN_FOCUS);
     gtk_layout_set_size(GTK_LAYOUT(SettingsContainerControls),
@@ -116,8 +116,8 @@ void ShowSettingsWindow()
     // initgl();
     gtk_widget_show_all(SettingsWindow);
     ShowPreferences();
-    CamAreaWidth = CamArea->allocation.width;
-    CamAreaHeight = CamArea->allocation.height;
+    CamAreaWidth = gtk_widget_get_allocated_width(CamArea);
+    CamAreaHeight = gtk_widget_get_allocated_height(CamArea);
     //pthread_create(&ThreadId, NULL, &StartCapture, NULL);
     //Thread = g_thread_new(NULL, StartCapture, NULL);
     DisplaySelectionFrame();
@@ -157,7 +157,7 @@ void StartCapture(int camno)
     cv::Mat frame;
     // gtk_widget_grab_focus(GTK_WIDGET(CamArea));
 //    while(!SettingsWindowClosed)
-    if (gtk_gl_area_begingl(GTK_GL_AREA(CamArea)))
+    //if (gtk_gl_area_begingl(GTK_GL_AREA(CamArea)))
     {
         /*g_print("Test\n");
         glViewport(0, 0, (GLsizei)CamAreaWidth, (GLsizei)CamAreaHeight);
@@ -171,13 +171,13 @@ void StartCapture(int camno)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);*/
         cap >> frame;
         cv::flip(frame, frame, 0);
-        img = frame;
+        img = cvIplImage(frame);
         LoadImage(&img, CamAreaWidth, CamAreaHeight, CamArea);
-        gtk_gl_area_endgl(GTK_GL_AREA(CamArea));
+        //gtk_gl_area_endgl(GTK_GL_AREA(CamArea));
         CheckEvents(RefreshRate);
-    }else
+    }//else
     {
-        g_print("Problem Loading OpenGL");
+       // g_print("Problem Loading OpenGL");
     }
 
     //gdk_threads_leave();
@@ -241,9 +241,7 @@ void StoreCamInfo(char* value)
 void SetSelectedCam(GtkComboBox *widget, gpointer user_data)
 {
     IsCamSelected = false;
-    char value[32];
-    sprintf(value, "%s", gtk_combo_box_get_active_text(
-        GTK_COMBO_BOX(ComboCamSelect)));
+    char value[32] = "Default";
     // g_print("\nCombo selected %s", value);
     SelectedCam = RetrieveCamInfo(value);
     cap.release();

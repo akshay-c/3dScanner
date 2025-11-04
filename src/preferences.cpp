@@ -80,7 +80,7 @@ void ValidateInt(GtkEntry *entry, const gchar *text, gint length,
     gint *position, gpointer data);
 void ValidateFloat(GtkEntry *entry, const gchar *text, gint length,
     gint *position, gpointer data);
-static void ValidateFileName(GtkWidget *w, GtkFileSelection *fs);
+//static void ValidateFileName(GtkWidget *w, GtkFileSelection *fs);
 static void ButtonClicked(GtkWidget *w, gpointer data);
 
 //
@@ -253,14 +253,14 @@ static void ButtonClicked(GtkWidget *w, gpointer data)
     switch(Btn)
     {
         case 0:
-            OutputFileSelect = gtk_file_selection_new("Calibration Result");
-            g_signal_connect (GTK_FILE_SELECTION (OutputFileSelect)->ok_button,
-                "clicked", G_CALLBACK(ValidateFileName),
-                (gpointer) OutputFileSelect);
-            g_signal_connect_swapped(
-                GTK_FILE_SELECTION(OutputFileSelect)->cancel_button, "clicked",
-                G_CALLBACK(gtk_widget_destroy), OutputFileSelect);
-            gtk_widget_show(OutputFileSelect);
+            //OutputFileSelect = gtk_file_selection_new("Calibration Result");
+            //g_signal_connect (GTK_FILE_SELECTION (OutputFileSelect)->ok_button,
+            //    "clicked", G_CALLBACK(ValidateFileName),
+            //    (gpointer) OutputFileSelect);
+            //g_signal_connect_swapped(
+            //    GTK_FILE_SELECTION(OutputFileSelect)->cancel_button, "clicked",
+            //    G_CALLBACK(gtk_widget_destroy), OutputFileSelect);
+            //gtk_widget_show(OutputFileSelect);
         break;
         case 1:
             StartCalibration();
@@ -275,12 +275,12 @@ static void ButtonClicked(GtkWidget *w, gpointer data)
     }
 }
 
-static void ValidateFileName(GtkWidget *w, GtkFileSelection *fs)
+/*static void ValidateFileName(GtkWidget *w, GtkFileSelection *fs)
 {
     gtk_entry_set_text(GTK_ENTRY(OutputFileText),
         gtk_file_selection_get_filename (GTK_FILE_SELECTION (fs)));
     gtk_widget_destroy(OutputFileSelect);
-}
+}*/
 
 void ValidateInt(GtkEntry *entry, const gchar *text, gint length,
     gint *position, gpointer data)

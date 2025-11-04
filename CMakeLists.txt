@@ -15,15 +15,16 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 # Use PkgConfig to detect GTK+ headers/library files
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
+pkg_check_modules(GTK2 REQUIRED gtk+-3.0)
 include_directories(${GTK2_INCLUDE_DIRS})
 link_directories(${GTK2_LIBRARY_DIRS})
 add_definitions(${GTK2_CFLAGS_OTHER})
 
 pkg_check_modules(LIBSERIAL REQUIRED libserial)
-include_directories(${LIBSERIAL_INCLUDE_DIRS})
+include_directories(${LIBSERIAL_INCLUDE_DIRS}/libserial)
 link_directories(${LIBSERIAL_LIBRARY_DIRS})
 add_definitions(${LIBSERIAL_CFLAGS_OTHER})
+message(INFO "Libserial: ${LIBSERIAL_INCLUDE_DIRS}}")
 
 # Use PkgConfig to detect epoxy headers/library files
 pkg_check_modules(EPOXY REQUIRED epoxy)
@@ -33,7 +34,6 @@ add_definitions(${EPOXY_CFLAGS_OTHER})
 
 
 # Use PkgConfig to detect gtkglarea
-pkg_check_modules(GTKGL REQUIRED gtkgl-2.0)
 include_directories(${GTKGL_INCLUDE_DIRS})
 message(STATUS "${GTKGL_INCLUDE_DIRS}")
 link_directories(${GTKGL_LIBRARY_DIRS})

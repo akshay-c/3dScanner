@@ -3,7 +3,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <gtk/gtk.h>
-#include <gtkgl/gtkglarea.h>
+#include <gtk/gtkglarea.h>
 
 static GLuint              Texture;
 
@@ -59,6 +59,6 @@ void LoadImage(IplImage *Image, int DisplayWidth, int DisplayHeight,
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     ApplyTexture(Image->width,Image->height, DisplayWidth, DisplayHeight);
-    gtk_gl_area_swapbuffers(GTK_GL_AREA(Region));
+    // gtk_gl_area_swapbuffers(GTK_GL_AREA(Region));
 }
 

@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include <gtkgl/gtkglarea.h>
+#include <gtk/gtkglarea.h>
 #include <GL/gl.h>
 #include <opencv2/core/types_c.h>
 #include <math.h>
@@ -90,8 +90,6 @@ GtkRequisition  reqs;
 int             AppStatus;
 char*           VideoDevice;
 int             SelectedCam = -1;
-int             AttrList[] = {GDK_GL_RGBA,GDK_GL_DEPTH_SIZE, 24,
-                    GDK_GL_DOUBLEBUFFER, GDK_GL_NONE};
 bool            StartFeed = false;
 
 double          Threshold = 50.0;
@@ -139,7 +137,7 @@ void SetVideoDevice(const char* DeviceName, int Length)
 void InitAll()
 {
     VideoDevice = (char*) malloc(sizeof(char));
-    MainCamArea = gtk_gl_area_new (AttrList);
+    MainCamArea = gtk_gl_area_new ();
     MWContainerMain = gtk_fixed_new();
     MWContainerCam = gtk_layout_new(NULL, NULL);
     MWContainerPref = gtk_layout_new(NULL, NULL);
@@ -158,7 +156,6 @@ void InitAll()
     gtk_fixed_put (GTK_FIXED (fixed), button, i*50, i*50);*/
 
     gtk_widget_set_events(GTK_WIDGET(MainCamArea), GDK_EXPOSURE_MASK);
-    gtk_quit_add_destroy(1, GTK_OBJECT(MainCamArea));
 }
 
 int main(int argc, char *argv[]) {
@@ -222,8 +219,8 @@ int main(int argc, char *argv[]) {
     g_signal_connect (BlueSlider, "value-changed",
               G_CALLBACK (SliderChanged), (gpointer) "3");
 
-    OpenPort("/dev/ttyACM0", READ_WRITE_UART);
-    ConfigurePort(BAUD_9600, CHAR_SIZE_8, PARITY_NONE, 1, FLOW_CONTROL_NONE);
+    //OpenPort("/dev/ttyACM0", READ_WRITE_UART);
+    //ConfigurePort(LibSerial::BaudRate::BAUD_9600, LibSerial::CharacterSize::CHAR_SIZE_8, LibSerial::Parity::PARITY_NONE, 1, LibSerial::FlowControl::FLOW_CONTROL_NONE);
     gtk_widget_show_all(MainWindow);
     gtk_main();
     /* Release gtk's global lock */
@@ -263,7 +260,6 @@ void MainWindowClosing(GtkWidget *widget, gpointer callback_data)
 {
     HideFeed();
     ClosePort();
-    gtk_main_quit();
 }
 
 void CamIdle(int FeedCount)
@@ -299,19 +295,19 @@ void ShowFeed()
         MarkedTimeStamp = clock();
         while(StartFeed)
         {
-            if (gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
+            //if (gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
             {
                 cap >> frame;
                 cv::flip(frame, frame, 0);
-                img = frame;
+                img = cvIplImage(frame);
                 LoadImage(&img, MW_CAMAREA_WIDTH,
                     MW_CAMAREA_HEIGHT, MainCamArea);
                 CheckEvents(CalibrationDelay);
-                gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
+                //gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
             }
-        else
+        //else
         {
-            g_print("Problem Loading OpenGL");
+            //g_print("Problem Loading OpenGL");
         }
         }
     }
@@ -346,12 +342,12 @@ void ShowSampleImage()
 {
     IplImage img;
     HideFeed();
-    if (gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
+    //if (gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
     {
-        img = SampleImage;
+        img = cvIplImage(SampleImage);
         LoadImage(&img, MW_CAMAREA_WIDTH,
             MW_CAMAREA_HEIGHT, MainCamArea);
-        gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
+        //gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
     }
 }
 
@@ -360,13 +356,13 @@ void ShowDiffImage()
 {
     IplImage img;
     HideFeed();
-    if (gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
+    //if (gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
     {
         cv::absdiff(SampleImage, TestImage, DiffImage);
-        img = DiffImage;
+        img = cvIplImage(DiffImage);
         LoadImage(&img, MW_CAMAREA_WIDTH,
             MW_CAMAREA_HEIGHT, MainCamArea);
-        gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
+        //gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
     }
 }
 
@@ -408,14 +404,14 @@ void SetFilteredImage()
 void ShowFilteredImage()
 {
     IplImage img;
-    img = FilteredImage;
+    img = cvIplImage(FilteredImage);
     HideFeed();
-    if(gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
+    //if(gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
         {
             LoadImage(&img, MW_CAMAREA_WIDTH,
                 MW_CAMAREA_HEIGHT, MainCamArea);
             CheckEvents(100);
-            gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
+            //gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
         }
 }
 
@@ -460,12 +456,12 @@ void SetReferenceImage()
 
     cv::flip(foregroundMask, ReferenceImage, 0);
     // cv::flip(DiffImage, frame, 0);
-    img = ReferenceImage;
+    img = cvIplImage(ReferenceImage);
     HideFeed();
     LoadImage(&img, MW_CAMAREA_WIDTH,
         MW_CAMAREA_HEIGHT, MainCamArea);
     CheckEvents(100);
-    gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
+    //gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
     // printf("Rows: %d Cols: %d\n",TestImage.rows,TestImage.cols);
 }
 
@@ -473,12 +469,12 @@ void ShowTestImage()
 {
     IplImage img;
     HideFeed();
-    if (gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
+//    if (gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
     {
-        img = TestImage;
+        img = cvIplImage(TestImage);
         LoadImage(&img, MW_CAMAREA_WIDTH,
             MW_CAMAREA_HEIGHT, MainCamArea);
-        gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
+        //gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
     }
 }
 
@@ -639,11 +635,11 @@ void InitCamContainer()
 
     gtk_widget_set_size_request(MainCamArea,
         MW_CAMAREA_WIDTH, MW_CAMAREA_HEIGHT);
-    gtk_widget_set_usize(MainCamArea, MW_CAMAREA_WIDTH, MW_CAMAREA_HEIGHT);
+    gtk_widget_set_size_request(MainCamArea, MW_CAMAREA_WIDTH, MW_CAMAREA_HEIGHT);
     
     gtk_widget_set_size_request(MWContainerCam,
         MW_CAMAREA_WIDTH + 50, MW_HEIGHT);
-    gtk_widget_set_usize(MWContainerCam, MW_CAMAREA_WIDTH + 50, MW_HEIGHT);
+    gtk_widget_set_size_request(MWContainerCam, MW_CAMAREA_WIDTH + 50, MW_HEIGHT);
 
     gtk_layout_put(GTK_LAYOUT(MWContainerCam), MainCamArea, MW_CA_X, MW_CA_Y);
     gtk_layout_put(GTK_LAYOUT(MWContainerCam), StartFeedButton,
@@ -695,7 +691,7 @@ void InitPrefContainer()
 
     gtk_widget_set_size_request(MWContainerPref,
         MW_CAMAREA_WIDTH, MW_HEIGHT);
-    gtk_widget_set_usize(MWContainerPref, MW_CAMAREA_WIDTH, MW_HEIGHT);
+    gtk_widget_set_size_request(MWContainerPref, MW_CAMAREA_WIDTH, MW_HEIGHT);
 
     gtk_layout_put(GTK_LAYOUT(MWContainerPref), ThresholdLabel , 10, 100);
     gtk_widget_size_request(ThresholdLabel, &reqs);
@@ -741,7 +737,7 @@ void InitPrefContainer()
 
     gtk_widget_set_size_request(FilterGroupFrame,
         200, 120 + (LblHeight*3));
-    gtk_widget_set_usize(FilterGroupFrame, 200, 120 + (LblHeight*2));
+    gtk_widget_set_size_request(FilterGroupFrame, 200, 120 + (LblHeight*2));
     gtk_layout_put(GTK_LAYOUT(MWContainerPref), FilterGroupFrame, 2, 75);
 
     gtk_layout_put(GTK_LAYOUT(MWContainerPref), FillRangeLabel ,
@@ -766,7 +762,7 @@ void InitPrefContainer()
 
     gtk_widget_set_size_request(ReferenceGroupFrame,
         200, 120 + (LblHeight*3));
-    gtk_widget_set_usize(ReferenceGroupFrame, 200, 120 + (LblHeight*2));
+    gtk_widget_set_size_request(ReferenceGroupFrame, 200, 120 + (LblHeight*2));
     gtk_layout_put(GTK_LAYOUT(MWContainerPref), ReferenceGroupFrame, 232, 75);
 
     gtk_layout_put(GTK_LAYOUT(MWContainerPref), SampleImageButton, 10,
@@ -849,14 +845,14 @@ void GetDataPoints()
 void ShowDataPoints()
 {
     IplImage img;
-    if(gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
+    //if(gtk_gl_area_begingl(GTK_GL_AREA(MainCamArea)))
     {
-        img = DataPointImage;
+        img = cvIplImage(DataPointImage);
         HideFeed();
         LoadImage(&img, MW_CAMAREA_WIDTH,
             MW_CAMAREA_HEIGHT, MainCamArea);
         CheckEvents(100);
-        gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
+        //gtk_gl_area_endgl(GTK_GL_AREA(MainCamArea));
     }
 }
 void LaserON()

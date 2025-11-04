@@ -65,16 +65,16 @@ int OpenPort(std::string Name, int mode)
     //return(fd);
 }
 
-int ConfigurePort(int BaudRate, int CharSize,
-    int Parity, int StopBits, int FlowControl)
+int ConfigurePort(LibSerial::BaudRate BaudRate, LibSerial::CharacterSize CharSize,
+    LibSerial::Parity Parity, int StopBits, LibSerial::FlowControl FlowControl)
 {
 
-    serial_port.SetBaudRate((SerialStreamBuf::BaudRateEnum)BaudRate);
-    serial_port.SetCharSize((SerialStreamBuf::CharSizeEnum)CharSize);
-    serial_port.SetParity((SerialStreamBuf::ParityEnum)Parity);
-    serial_port.SetNumOfStopBits(StopBits);
-    // serial_port.SetNumOfStopBits(1);
-    serial_port.SetFlowControl((SerialStreamBuf::FlowControlEnum)FlowControl);
+    serial_port.SetBaudRate(BaudRate);
+    serial_port.SetCharacterSize(CharSize);
+    serial_port.SetParity(Parity);
+    serial_port.SetStopBits(LibSerial::StopBits::STOP_BITS_1);
+    //serial_port.SetNumOfStopBits(StopBits);
+    serial_port.SetFlowControl(FlowControl);
     if(!serial_port.good())
     {
         printf("Error Setting Baudrate\n");
