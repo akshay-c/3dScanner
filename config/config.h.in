@@ -1,0 +1,13 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+#include <cstdint>
+#include <string>
+
+constexpr uint8_t PROJECT_VERSION_MAJOR @PROJECT_VERSION_MAJOR@;
+constexpr uint8_t PROJECT_VERSION_MINOR @PROJECT_VERSION_MINOR@;
+constexpr uint8_t PROJECT_VERSION_PATCH @PROJECT_VERSION_PATCH@;
+constexpr uint8_t PROJECT_VERSION_TWEAK @PROJECT_VERSION_TWEAK@;
+
+constexpr std::string PROJECT_VERSION_STRING("@PROJECT_VERSION@");
+
+#endif // CONFIG_H

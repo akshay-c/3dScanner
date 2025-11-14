@@ -1,73 +1,65 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-project(Scanner)
+cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 
-#Check requirements for OpenCv
-find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
+# Auto version pickup
+file(READ "${CMAKE_SOURCE_DIR}/config/version" PROJECT_VERSION_STRING)
+string(STRIP "${PROJECT_VERSION_STRING}" PROJECT_VERSION_STRING)
 
-#find_package(GLUT REQUIRED)
-#include_directories(${GLUT_INCLUDE_DIRS})
-#link_directories(${GLUT_LIBRARY_DIRS})
-#add_definitions(${GLUT_DEFINITIONS})
-#if(NOT GLUT_FOUND)
-#    message(ERROR " GLUT not found!")
-#endif(NOT GLUT_FOUND)
+project(3dScanner VERSION ${PROJECT_VERSION_STRING})  #Major.Minor.Patch.Tweak
 
-# Use PkgConfig to detect GTK+ headers/library files
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
-include_directories(${GTK2_INCLUDE_DIRS})
-link_directories(${GTK2_LIBRARY_DIRS})
-add_definitions(${GTK2_CFLAGS_OTHER})
+message(STATUS "Welcome to 3dScanner Version ${PROJECT_VERSION_STRING}")
 
-pkg_check_modules(LIBSERIAL REQUIRED libserial)
-include_directories(${LIBSERIAL_INCLUDE_DIRS})
-link_directories(${LIBSERIAL_LIBRARY_DIRS})
-add_definitions(${LIBSERIAL_CFLAGS_OTHER})
+set (CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(SYSTEM_DEFINES)
+set(PROJECT_DEFINES)
+set(PROJECT_INCLUDES)
+set(COMMON_FILES)
+message(STATUS  "Checking System requirements...")
 
-# Use PkgConfig to detect epoxy headers/library files
-pkg_check_modules(EPOXY REQUIRED epoxy)
-include_directories(${EPOXY_INCLUDE_DIRS})
-link_directories(${EPOXY_LIBRARY_DIRS})
-add_definitions(${EPOXY_CFLAGS_OTHER})
+if(WIN32)
+    message(FATAL_ERROR "Cannot build for windows, exiting")
+    list(APPEND SYSTEM_DEFINES "-D__WIN32__")
+elseif(MSVC)
+    message(FATAL_ERROR "Cannot build for MacOS, exiting")
+    list(APPEND SYSTEM_DEFINES "-D__MSVC__")
+elseif(UNIX)
+    message(STATUS "Unix like operating system found. Initializing.." )
+    list(APPEND SYSTEM_DEFINES "-D__UNIX__")
 
+endif()
 
-# Use PkgConfig to detect gtkglarea
-pkg_check_modules(GTKGL REQUIRED gtkgl-2.0)
-include_directories(${GTKGL_INCLUDE_DIRS})
-message(STATUS "${GTKGL_INCLUDE_DIRS}")
-link_directories(${GTKGL_LIBRARY_DIRS})
-add_definitions(${GTKGL_CFLAGS_OTHER})
+# Common Definitions independent of platform
+math(EXPR BUS_SIZE "8* ${CMAKE_SIZEOF_VOID_P}")
+list(APPEND SYSTEM_DEFINES "-D_SYS_${BUS_SIZE}")
 
-# Check PThreads 
-find_package (Threads)
+message(STATUS "Found ${BUS_SIZE} bit system. System Defines: ${SYSTEM_DEFINES}")
 
 
-#Check OpenGl
-find_package(OpenGL REQUIRED)
-include_directories(${OpenGL_INCLUDE_DIRS})
-link_directories(${OpenGL_LIBRARY_DIRS})
-add_definitions(${OpenGL_DEFINITIONS})
-if(NOT OPENGL_FOUND)
-    message(ERROR " OPENGL not found!")
-endif(NOT OPENGL_FOUND)
+list(APPEND PROJECT_INCLUDES "${PROJECT_SOURCE_DIR}/include")
+file(GLOB COMMON_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
+message(STATUS "Attached Includes: ${PROJECT_INCLUDES}\nAttached Sources: ${COMMON_FILES}\n")
 
-file(GLOB_RECURSE Scanner_SOURCES "src/*.cpp")
-file(GLOB_RECURSE Scanner_HEADERS "include/*.hpp")
+# Export software version from Cmake to Code
+configure_file("${PROJECT_SOURCE_DIR}/config/config.h.in" "${PROJECT_BINARY_DIR}/config.h" @ONLY)
+message(STATUS "Version file created.\n\n${PROJECT_BINARY_DIR}/config.h")
+file(READ "${PROJECT_BINARY_DIR}/config.h" file_contents)
+message("${file_contents}")
 
-set (Scanner_INCLUDE_DIRS "")
-foreach (_headerFile ${Scanner_HEADERS})
-    get_filename_component(_dir ${_headerFile} PATH)
-    list (APPEND Scanner_INCLUDE_DIRS ${_dir})
-endforeach()
-list(REMOVE_DUPLICATES Scanner_INCLUDE_DIRS)
 
-include_directories(${Scanner_INCLUDE_DIRS})
-add_executable (Scanner ${Scanner_SOURCES})
-set(OPENCV_LIBS opencv_core opencv_imgproc opencv_calib3d opencv_video
-opencv_features2d opencv_ml opencv_highgui opencv_objdetect )
-#set(OPENCV_LIBS opencv_highgui)
+# Qt specific setup
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+qt_standard_project_setup()
 
-target_link_libraries (Scanner ${OPENCV_LIBS} ${OPENGL_LIBRARIES}
-	${GLUT_LIBRARY} ${GTK2_LIBRARIES} ${GTKGL_LIBRARIES} ${EPOXY_LIBRARIES}
-	${GDK3_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${LIBSERIAL_LIBRARIES})
+# Target configurations
+qt_add_executable(3dScanner ${COMMON_FILES})
+target_compile_definitions(3dScanner PRIVATE ${SYSTEM_DEFINES})
+target_compile_definitions(3dScanner PRIVATE ${PROJECT_DEFINES})
+target_include_directories(3dScanner PRIVATE ${PROJECT_INCLUDES})
+target_link_libraries(3dScanner PRIVATE Qt6::Widgets)
+
+
+# # Set properties to ensure it builds as a proper GUI application (e.g., no console window on Windows)
+# set_target_properties(HelloWorld PROPERTIES
+#     WIN32_EXECUTABLE ON
+#     MACOSX_BUNDLE ON
+# )
