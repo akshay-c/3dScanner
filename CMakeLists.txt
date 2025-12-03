@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SYSTEM_DEFINES)
 set(PROJECT_DEFINES)
 set(PROJECT_INCLUDES)
+set(AUTOGEN_INCLUDES ${PROJECT_SOURCE_DIR}/include/autogen)
 set(COMMON_FILES)
 message(STATUS  "Checking System requirements...")
 
@@ -40,9 +41,9 @@ file(GLOB COMMON_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 message(STATUS "Attached Includes: ${PROJECT_INCLUDES}\nAttached Sources: ${COMMON_FILES}\n")
 
 # Export software version from Cmake to Code
-configure_file("${PROJECT_SOURCE_DIR}/config/config.h.in" "${PROJECT_BINARY_DIR}/config.h" @ONLY)
+configure_file("${PROJECT_SOURCE_DIR}/config/config.h.in" "${AUTOGEN_INCLUDES}/config.h" @ONLY)
 message(STATUS "Version file created.\n\n${PROJECT_BINARY_DIR}/config.h")
-file(READ "${PROJECT_BINARY_DIR}/config.h" file_contents)
+file(READ "${AUTOGEN_INCLUDES}/config.h" file_contents)
 message("${file_contents}")
 
 
@@ -54,7 +55,7 @@ qt_standard_project_setup()
 qt_add_executable(3dScanner ${COMMON_FILES})
 target_compile_definitions(3dScanner PRIVATE ${SYSTEM_DEFINES})
 target_compile_definitions(3dScanner PRIVATE ${PROJECT_DEFINES})
-target_include_directories(3dScanner PRIVATE ${PROJECT_INCLUDES})
+target_include_directories(3dScanner PRIVATE ${PROJECT_INCLUDES} ${AUTOGEN_INCLUDES})
 target_link_libraries(3dScanner PRIVATE Qt6::Widgets)
 
 

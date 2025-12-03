@@ -1,13 +1,13 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef D3_CONFIG_H
+#define D3_CONFIG_H
 #include <cstdint>
-#include <string>
+#include <string_view>
 
-constexpr uint8_t PROJECT_VERSION_MAJOR @PROJECT_VERSION_MAJOR@;
-constexpr uint8_t PROJECT_VERSION_MINOR @PROJECT_VERSION_MINOR@;
-constexpr uint8_t PROJECT_VERSION_PATCH @PROJECT_VERSION_PATCH@;
-constexpr uint8_t PROJECT_VERSION_TWEAK @PROJECT_VERSION_TWEAK@;
+constexpr uint8_t PROJECT_VERSION_MAJOR = @PROJECT_VERSION_MAJOR@;
+constexpr uint8_t PROJECT_VERSION_MINOR = @PROJECT_VERSION_MINOR@;
+constexpr uint8_t PROJECT_VERSION_PATCH = @PROJECT_VERSION_PATCH@;
+constexpr uint8_t PROJECT_VERSION_TWEAK = @PROJECT_VERSION_TWEAK@;
 
-constexpr std::string PROJECT_VERSION_STRING("@PROJECT_VERSION@");
+constexpr std::string_view PROJECT_VERSION_STRING = "@PROJECT_VERSION@";
 
 #endif // CONFIG_H
